@@ -5,6 +5,8 @@ const client = new DynamoDBClient
 const docClient = DynamoDBDocumentClient.from(client);
 
 export const queryProducts = async (stage) => {
+    let newResponse = "";
+
     //console.log("stage::" + stage);
     const command = new QueryCommand({
         TableName: stage + "-my-first-table",
@@ -15,11 +17,18 @@ export const queryProducts = async (stage) => {
 
     const response = await docClient.send(command);
     console.log("queryProducts", response);
+    newResponse = response["Items"];
 
-    return response;
+    if (newResponse == "[]" || newResponse == null || newResponse == "") {
+        newResponse = "No hay items encontrados";
+    }
+
+    return newResponse;
 }
 
 export const getProduct = async (stage, idProducto) => {
+    let newResponse = "";
+
     //console.log("stage::" + stage + ", idProducto::" + idProducto);
     const command = new QueryCommand({
         TableName: stage + "-my-first-table",
@@ -30,8 +39,13 @@ export const getProduct = async (stage, idProducto) => {
 
     const response = await docClient.send(command);
     console.log("queryProducts", response);
+    newResponse = response["Items"];
 
-    return response;
+    if (newResponse == "[]" || newResponse == null || newResponse == "") {
+        newResponse = "Item no encontrado";
+    }
+
+    return newResponse;
 }
 
 export const uploadProduct = async (message) => {
