@@ -1,6 +1,6 @@
 echo off
-echo "Function: crud_producto"
+echo "Function: MakeupM-CRUDProducto"
 cd ./
-tar.exe -a -c -f lambda.zip adapters domain index.mjs node_modules package.json package-lock.json
+tar.exe -a -c -f lambda.zip adapters domain node_modules index.mjs package.json package-lock.json
 echo "Upload"
-aws lambda update-function-code --function-name crud_producto --zip-file fileb://lambda.zip --profile default --region us-east-1
+aws lambda update-function-code --function-name MakeupM-CRUDProducto --zip-file fileb://lambda.zip --profile default --region us-east-1
