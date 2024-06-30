@@ -3,15 +3,19 @@ import { QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient
 const docClient = DynamoDBDocumentClient.from(client);
+const DynamoTables = {
+    "dev": "MakeupM-DyDB",
+    "prod": "MakeupM-DyDB"
+}
 
 export const queryProducts = async (stage) => {
     let newResponse = "";
 
     //console.log("stage::" + stage);
     const command = new QueryCommand({
-        TableName: stage + "-my-first-table",
-        KeyConditionExpression: "pk = :pk",
-        ExpressionAttributeValues: { ":pk": "PRODUCT", },
+        TableName: DynamoTables[stage],
+        KeyConditionExpression: "Tipo = :Tipo",
+        ExpressionAttributeValues: { ":Tipo": "PRODUCTO", },
         ConsistentRead: false,
     });
 
@@ -31,9 +35,9 @@ export const getProduct = async (stage, idProducto) => {
 
     //console.log("stage::" + stage + ", idProducto::" + idProducto);
     const command = new QueryCommand({
-        TableName: stage + "-my-first-table",
-        KeyConditionExpression: "pk = :pk AND sk = :sk",
-        ExpressionAttributeValues: { ":pk": "PRODUCT", ":sk": idProducto, },
+        TableName: DynamoTables[stage],
+        KeyConditionExpression: "Tipo = :Tipo AND ID = :ID",
+        ExpressionAttributeValues: { ":Tipo": "PRODUCTO", ":ID": "PROD#" + idProducto, },
         ConsistentRead: false,
     })
 
@@ -48,6 +52,20 @@ export const getProduct = async (stage, idProducto) => {
     return newResponse;
 }
 
-export const uploadProduct = async (message) => {
-    
+export const postProduct = async (message) => {
+    let newResponse = "";
+
+    return newResponse;
+}
+
+export const putProduct = async (message) => {
+    let newResponse = "";
+
+    return newResponse;
+}
+
+export const deleteProduct = async (message) => {
+    let newResponse = "";
+
+    return newResponse;
 }

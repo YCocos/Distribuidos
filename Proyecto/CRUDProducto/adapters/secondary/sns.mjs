@@ -2,7 +2,7 @@ import { SNSClient, PublishCommand } from "@aws-sdk/client-sns";
 
 const snsClient = new SNSClient({});
 const snsTopicsARNs = {
-    "dev": "arn:aws:sns:us-east-1:637423276827:dev-my-topic-sns",
+    "dev": "arn:aws:sns:us-east-1:992382572215:MakeupM-SNS-POSTProducto",
     "prod": ""
 }
 

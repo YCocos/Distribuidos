@@ -4,7 +4,7 @@ import { SQSClient, SendMessageCommand, ReceiveMessageCommand, DeleteMessageComm
 //Hacer un objeto/arreglo con las dos URLs
 const sqsClient = new SQSClient({});
 const sqsUrls = {
-    "dev": "https://sqs.us-east-1.amazonaws.com/637423276827/dev-my-queue-sqs",
+    "dev": "https://sqs.us-east-1.amazonaws.com/992382572215/MakeupM-SQS-POSTProducto",
     "prod": ""
 }
 
@@ -49,31 +49,31 @@ export const queueMessage = async (stage, message) => {
 export const dequeueMessage = async (stage) => {
     console.log("stage::", stage);
     
-    const DequeueCommand = new ReceiveMessageCommand({
+    const DequeCommand = new ReceiveMessageCommand({
         QueueUrl:sqsUrls[stage],
-        MaxNumberOfMessages:10,
+        MaxNumberOfMessages:1,
         WaitTimeSeconds:10
     });
 
     try {
-        let response = await sqsClient.send(DequeueCommand);
+        let response = await sqsClient.send(DequeCommand);
+        let mensaje = "";
     
         if (response.Messages && response.Messages.length > 0) {
-            let mensaje = response;
-
             for (const message of response.Messages) {
                 const DeleteCommand = new DeleteMessageCommand({
                     QueueUrl: sqsUrls[stage],
                     ReceiptHandle: message.ReceiptHandle
                 });
-    
-                // Delete the message from the queue
+
+                mensaje = message.Body;
+
                 await sqsClient.send(DeleteCommand);
             }
             
             return {
                 'statusCode': 200,
-                'body': JSON.stringify(mensaje)
+                'body': JSON.parse(mensaje)
             }
         } else {
             console.log("Ningun mensaje recibido");
@@ -86,5 +86,4 @@ export const dequeueMessage = async (stage) => {
             error: e.message
         };
     }
-    
 }
