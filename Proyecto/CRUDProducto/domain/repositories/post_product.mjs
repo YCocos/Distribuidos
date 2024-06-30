@@ -1,18 +1,19 @@
-import { queueMessage } from "../../adapters/secondary/sqs.mjs";
-import { publishMessage } from "../../adapters/secondary/sns.mjs";
+import { postProduct } from "../../adapters/secondary/dynamodb.mjs";
+import { printProduct } from "../../utils/print_producto.mjs";
 
 export const post_product = async (stage, event) => {
+    console.log("Evento Post Producto")
     let responseEvent = "No encontrado";
 
-    let bodyArray = event["body"];
-    console.log("Body::", bodyArray);
+    let body = JSON.parse(event.body);
+    console.log("Body::", body);
 
-    //console.log("Pk:" + bodyArray[0] + ", SK:" + bodyArray[1] + ", amount:" + bodyArray[2] + ", price:" + bodyArray[3] + ", productName:" + bodyArray[4]);
-    responseEvent = await queueMessage(stage, bodyArray);
-    let message = "Mensaje en SQS";
-    responseEvent = await publishMessage(stage, message);
+    let tipo = "PRODUCTO";
+    body.Tipo = tipo;
+    body.ID = "PROD#" + body.ID;
+    printProduct(body);
+
+    responseEvent = await postProduct(stage, body);
 
     return responseEvent;
 }
-
-

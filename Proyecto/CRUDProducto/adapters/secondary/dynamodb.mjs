@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, QueryCommand, PutCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient
 const docClient = DynamoDBDocumentClient.from(client);
@@ -39,7 +39,7 @@ export const getProduct = async (stage, idProducto) => {
         KeyConditionExpression: "Tipo = :Tipo AND ID = :ID",
         ExpressionAttributeValues: { ":Tipo": "PRODUCTO", ":ID": "PROD#" + idProducto, },
         ConsistentRead: false,
-    })
+    });
 
     const response = await docClient.send(command);
     console.log("queryProducts", response);
@@ -52,20 +52,86 @@ export const getProduct = async (stage, idProducto) => {
     return newResponse;
 }
 
-export const postProduct = async (message) => {
+export const postProduct = async (stage, body) => {
     let newResponse = "";
 
-    return newResponse;
+    const item = {
+        Tipo: body.Tipo,
+        ID: body.ID,
+        Nombre: body.Nombre,
+        Categoria: body.Categoria,
+        Descripcion: body.Descripcion,
+        Precio: body.Precio,
+        Stock: body.Stock
+    };
+
+    const command = new PutCommand({
+        TableName: DynamoTables[stage],
+        Item: item
+    });
+
+    try {
+        newResponse = await docClient.send(command);
+        return newResponse;
+    } catch (e) {
+        console.error("Fallo al insetar Item:", e);
+        throw new Error("Fallo al insetar Item");
+    };
 }
 
-export const putProduct = async (message) => {
+export const putProduct = async (stage, body) => {
     let newResponse = "";
 
-    return newResponse;
+    const key = {
+        Tipo: body.Tipo,
+        ID: body.ID
+    };
+    
+    const updateExpression = 'set Nombre = :Nombre, Categoria = :Cat, Descripcion = :Desc, Precio = :Precio, Stock = :Stock';
+    const expressionAttributeValues = {
+        ':Nombre': body.Nombre,
+        ':Cat': body.Categoria,
+        ':Desc': body.Descripcion,
+        ':Precio': body.Precio,
+        ':Stock': body.Stock
+    };
+
+    const command = new UpdateCommand({
+        TableName: DynamoTables[stage],
+        Key: key,
+        UpdateExpression: updateExpression,
+        ExpressionAttributeValues: expressionAttributeValues,
+        ReturnValues: 'UPDATED_NEW'
+    });
+
+    try {
+        newResponse = await docClient.send(command);
+        return newResponse;
+    } catch (e) {
+        console.error("Fallo al actualizar el Item:", e);
+        throw new Error("Fallo al actualizar el Item");
+    };
 }
 
-export const deleteProduct = async (message) => {
+export const deleteProduct = async (stage, body) => {
     let newResponse = "";
 
-    return newResponse;
+    const key = {
+        Tipo: body.Tipo,
+        ID: body.ID
+    };
+
+    const command = new DeleteCommand({
+        TableName: DynamoTables[stage],
+        Key: key,
+        ReturnValues: 'ALL_OLD'
+    });
+
+    try {
+        newResponse = await docClient.send(command);
+        return newResponse;
+    } catch (e) {
+        console.error("Fallo al eliminar el Item:", e);
+        throw new Error("Fallo al eliminar el Item");
+    };
 }

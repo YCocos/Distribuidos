@@ -1,25 +1,21 @@
 import { apigtwAdapter } from './adapters/primary/apigtwAdapter.mjs'
 import { snsAdapter } from './adapters/primary/snsAdapter.mjs'
+import { buildResponse } from './utils/response_front.mjs'
 
 export const handler = async (event, context) => {
     let responseEvent = {};
 
-    console.log("context::", context);
     let stage = getStage(context);
     console.log("stage::", stage);
-
-    //Imprimir el evento
-    console.log("handler::", event);
+    console.log("event::", event);
 
     if (event["httpMethod"]) {
         console.log("Evento HTTP");
-        //responseEvent = "Evento HTTP";
         responseEvent = await apigtwAdapter(event, stage);
     } else if (event["isManualEvent"]) {
-        //console.log("Evento Manual");
+        console.log("Evento Manual");
         responseEvent = "Evento Manual";
     } else if (event["Records"]) {
-        //responseEvent = "Evento Records";
         const records = event["Records"];
         console.log("Evento Records: " + records);
         if (records[0]["EventSource"] == "aws:sns") {
@@ -32,17 +28,12 @@ export const handler = async (event, context) => {
         responseEvent = "Evento no reconocido";
     }
 
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify(responseEvent),
-    };
+    const response = buildResponse(200, responseEvent);
 
     return response;
 };
 
 function getStage(context) {
-    //Imprimir el contexto
-    console.log("handler::", context);
-
+    console.log("context::", context);
     return context.invokedFunctionArn.split(':')[7];
 }
