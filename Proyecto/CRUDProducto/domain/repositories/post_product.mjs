@@ -19,4 +19,4 @@ export const post_product = async (stage, event) => {
     responseEvent = await postProduct(stage, body);
 
     return responseEvent;
-}
+};
