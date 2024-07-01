@@ -23,4 +23,4 @@ export const handler = async (event, context) => {
 function getStage(context) {
     console.log("context::", context);
     return context.invokedFunctionArn.split(':')[7];
-}
+};

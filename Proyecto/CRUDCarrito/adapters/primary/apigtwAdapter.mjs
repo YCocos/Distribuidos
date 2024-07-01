@@ -45,9 +45,4 @@ export const apigtwAdapter = async (event, stage) => {
     }
 
     return responseEvent;
-}
-
-function noNumerico(ID) {
-    const Patron = /\D/;
-    return Patron.test(ID);
-}
+};
