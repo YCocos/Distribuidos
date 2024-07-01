@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, QueryCommand, PutCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, QueryCommand, PutCommand, UpdateCommand, DeleteCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient
 const docClient = DynamoDBDocumentClient.from(client);
@@ -72,11 +72,13 @@ export const postProduct = async (stage, body) => {
 
     try {
         newResponse = await docClient.send(command);
-        return newResponse;
     } catch (e) {
+        newResponse = e;
         console.error("Fallo al insetar Item:", e);
         throw new Error("Fallo al insetar Item");
     };
+
+    return newResponse;
 }
 
 export const putProduct = async (stage, body) => {
@@ -106,11 +108,13 @@ export const putProduct = async (stage, body) => {
 
     try {
         newResponse = await docClient.send(command);
-        return newResponse;
     } catch (e) {
+        newResponse = e
         console.error("Fallo al actualizar el Item:", e);
         throw new Error("Fallo al actualizar el Item");
     };
+
+    return newResponse;
 }
 
 export const deleteProduct = async (stage, body) => {
@@ -129,9 +133,40 @@ export const deleteProduct = async (stage, body) => {
 
     try {
         newResponse = await docClient.send(command);
-        return newResponse;
     } catch (e) {
+        newResponse =  e;
         console.error("Fallo al eliminar el Item:", e);
         throw new Error("Fallo al eliminar el Item");
     };
+
+    return newResponse;
+}
+
+export const maxID = async (stage) => {
+    let newResponse = "";
+
+    const command = new ScanCommand({
+        TableName: DynamoTables[stage],
+        ProjectionExpression: "ID"
+    });
+
+    try {
+        let datos = await docClient.send(command);
+        console.log("datos::", datos);
+        let IDs = datos.Items.map(item => item.ID);
+        console.log("IDs::", IDs);
+        let numericIDs = IDs
+            .filter(id => id.startsWith('PROD#'))
+            .map(id => parseInt(id.replace('PROD#', ''), 10));
+        console.log("numericIDs::", numericIDs);
+        let maxID = Math.max(...numericIDs);
+        console.log("maxID::", maxID);
+        newResponse = maxID;
+    } catch (e) {
+        newResponse =  e;
+        console.error("Fallo al escanear items:", e);
+        throw new Error("Fallo al escanear items");
+    };
+
+    return newResponse;
 }

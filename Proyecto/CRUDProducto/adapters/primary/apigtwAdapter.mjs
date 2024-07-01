@@ -18,15 +18,18 @@ export const apigtwAdapter = async (event, stage) => {
         if (idProducto.length > 0 && noNumerico(idProducto) == false) {
             switch (event["httpMethod"]) {
                 case "GET":
+                    console.log("HTTP GET");
                     responseEvent = await uc_get_product(stage, idProducto);
                     break;
                 case "POST":
                     responseEvent = "Sin metodo";
                     break;
                 case "PUT":
+                    console.log("HTTP PUT");
                     responseEvent = await uc_put_product(stage, event, idProducto);
                     break;
                 case "DELETE":
+                    console.log("HTTP DELETE");
                     responseEvent = await uc_delete_product(stage, event, idProducto);
                     break;
                 default:
@@ -42,6 +45,7 @@ export const apigtwAdapter = async (event, stage) => {
                 responseEvent = await uc_list_products(stage);
                 break;
             case "POST":
+                console.log("HTTP POST");
                 responseEvent = await uc_post_product(stage, event);
                 break;
             case "PUT":

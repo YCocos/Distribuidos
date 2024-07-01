@@ -12,9 +12,6 @@ export const handler = async (event, context) => {
     if (event["httpMethod"]) {
         console.log("Evento HTTP");
         responseEvent = await apigtwAdapter(event, stage);
-    } else if (event["isManualEvent"]) {
-        console.log("Evento Manual");
-        responseEvent = "Evento Manual";
     } else if (event["Records"]) {
         const records = event["Records"];
         console.log("Evento Records: " + records);
@@ -28,7 +25,7 @@ export const handler = async (event, context) => {
         responseEvent = "Evento no reconocido";
     }
 
-    const response = buildResponse(200, responseEvent);
+    let response = buildResponse(200, responseEvent);
 
     return response;
 };
